@@ -1,7 +1,7 @@
 ﻿  /{operation}:
     get:
       operationId: GetAll{capital_item}s
-      summary: Get all {lowercase_item}s
+      summary: Get all {lowercase_item}s 
       description: |
         Lists all {lowercase_item}s without any pagination or filtering.
       parameters:
