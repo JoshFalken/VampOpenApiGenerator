@@ -1,0 +1,194 @@
+﻿  Scale:
+    type: object
+    properties:
+      cpu:
+        type: number
+        format: double
+      memory:
+        type: string
+      instances:
+        type: integer
+  Filter:
+    type: object
+    properties:
+      condition:
+        type: string
+  Rewrite:
+    type: object
+    properties:
+      path:
+        type: string
+  Escalation:
+    type: object
+    properties:
+      type:
+        type: string
+      target:
+        type: string
+      minimum:
+        type: integer
+      maximum:
+        type: integer
+      scale_by:
+        type: integer
+  Instance:
+    type: object
+    properties:
+      name:
+        type: string
+      host:
+        type: string
+      port:
+        type: string
+      scale:
+        type: object
+        properties:
+          name: 
+            type: string
+          cpu:
+            type: integer
+          memory:
+            type: string
+          instances:
+            type: integer
+  Gateway:
+    type: object
+    properties:
+      name: 
+        type: string
+      port:
+        type: string
+      active: 
+        type: boolean
+      sticky:
+        type: string
+      routes: 
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/Route'
+  Route:
+    type: object
+    properties:
+      weight:
+        type: string
+      filter_strength:
+        type: string
+      filters:
+        type: array
+        items:
+          $ref: '#/definitions/Filter'
+      rewrites:
+        type: array
+        items:
+          $ref: '#/definitions/Rewrite'
+      instances:
+        type: array
+        items:
+          $ref: '#/definitions/Instance'
+  Sla:
+    description: A representation of an SLA
+    type: object
+    properties:
+      type:
+        type: string
+      threshold:
+        type: string
+  Port:
+    type: object
+    properties:
+      port:
+        type: string
+  Routing:
+    type: object
+    properties:
+      name:
+        type: string
+      weight:
+        type: string
+  Filters:
+    type: array
+    items: 
+      $ref: '#/definitions/Filter'
+  Rewrites:
+    type: array
+    items: 
+      $ref: '#/definitions/Rewrite'
+  Blueprint:
+    type: object
+    properties:
+      name:
+        type: string
+      gateways:
+        type: object
+        description: the format is 8080/http (key), my_frontend/port (value). Instead of http, tcp can also be used 
+        additionalProperties:
+          $ref: '#/definitions/Gateway'
+      clusters:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/Service'
+  Service:
+    type: object
+    properties:
+      services: 
+        # this would be a logical place to also include docker/marathon specs but this construct isn't supported
+        # by the openapi-specification, it is either an array or an object with properties
+        type: array
+        items:
+          $ref: '#/definitions/BreedScale'
+  BreedScale:
+    type: object
+    properties:
+      breed:
+        $ref: '#/definitions/Breed'
+      scale:
+        $ref: '#/definitions/Scale'
+  Breed:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The name of the breed
+      deployable:
+        type: string
+        description: Deployables are pointers to the actual artefacts that get deployed. Vamp supports Docker containers or can support any other artefacts supported by your container manager.
+      ports:
+        type: object
+        additionalProperties:
+          type: string
+      environment_variables:
+        type: object
+        additionalProperties:
+          type: string
+      arguments:
+        type: object
+        additionalProperties:
+          type: string
+      dependencies:
+        type: object
+        additionalProperties:
+          type: string
+      constants:
+        type: object
+        additionalProperties:
+          type: string
+  ErrorNotFound:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string

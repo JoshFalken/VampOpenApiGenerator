@@ -1,0 +1,7 @@
+﻿        - name: as_blueprint
+          in: query
+          description: |
+            exports each deployment as a valid blueprint. This can be used together with the header Accept: application/x-yaml to export in YAML format instead of the default JSON.
+          required: false
+          default: false
+          type: boolean

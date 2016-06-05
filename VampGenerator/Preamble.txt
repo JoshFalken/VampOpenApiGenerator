@@ -1,0 +1,17 @@
+﻿# this is an specification of the VAMP API
+# it is used as an learning tool for specifying an API spec in YAML
+swagger: '2.0'
+info:
+  title: Vamp API
+  description: The VAMP api
+  version: "1.0.0"
+# the domain of the service
+host: 192.168.1.54:8080
+# array of all schemes that your API supports
+schemes:
+  - http
+# will be prefixed to all paths
+basePath: /api/v1
+produces:
+  - application/x-yaml
+  - application/json

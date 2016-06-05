@@ -1,0 +1,10 @@
+        - name: id
+          in: path
+          description: the id of the deployment.
+          required: true
+          type: string
+        - name: name
+          in: path
+          description: the name of the cluster
+          required: true
+          type: string

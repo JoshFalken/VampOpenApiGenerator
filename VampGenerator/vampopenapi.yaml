@@ -1,0 +1,2259 @@
+# this is an specification of the VAMP API
+# it is used as an learning tool for specifying an API spec in YAML
+swagger: '2.0'
+info:
+  title: Vamp API
+  description: The VAMP api
+  version: "1.0.0"
+# the domain of the service
+host: 192.168.1.54:8080
+# array of all schemes that your API supports
+schemes:
+  - http
+# will be prefixed to all paths
+basePath: /api/v1
+produces:
+  - application/x-yaml
+  - application/json
+paths:
+  /breeds:
+    get:
+      operationId: GetAllBreeds
+      summary: Get all breeds
+      description: |
+        Lists all breeds without any pagination or filtering.
+      parameters:
+        - name: expand_references
+          in: query
+          description: |
+            All breed dependencies will be replaced (recursively) with full breed definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full breed dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+        - name: page
+          in: query
+          description: |
+            The indicator of the selected page
+          required: false
+          type: integer
+        - name: per_page
+          in: query
+          description: |
+            The number of breeds per page.
+          type: integer
+      tags:
+        - Breed
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An array of breeds
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Breed'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Add a breed.
+      operationId: AddBreed
+      description: |
+        Adds an breed.
+      parameters:
+        - name: breed
+          in: body
+          description: the breed to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Breed'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the breed only has to be validated.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Breed
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        201:
+          description: The just created breed
+          schema:
+            $ref: '#/definitions/Breed'            
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+  /breeds/{name}:
+    get:
+      summary: Get a single breed.
+      operationId: GetBreedByName
+      description: |
+        Selects one breed with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: expand_references
+          in: query
+          description: all breed dependencies will be replaced (recursively) with full breed definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full breed dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Breed
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An item of breed
+          schema:
+            $ref: '#/definitions/Breed'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+    put:
+      summary: Update a single breed.
+      operationId: UpdateBreedByName
+      description: |
+        Selects one breed with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: breed
+          in: body
+          required: true
+          description: the breed to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Breed'
+        - name: validate_only
+          in: query
+          description: Indicates whether ot all full breed dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Breed
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: The just created breed
+          schema:
+            $ref: '#/definitions/Breed'
+        202:
+          description: The just created breed
+          schema:
+            $ref: '#/definitions/Breed'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Delete breeds.
+      operationId: DeleteBreedByName
+      description: |
+        Delete one breed with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description:  the name of the breed to be deleted
+          type: string
+        - name: breed
+          in: body
+          required: true
+          description: the breed to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Breed'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the breed will actually be deleted.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Breed
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: the just deleted breed
+          schema:
+            $ref: '#/definitions/Breed'
+        204:
+          description: the just validated (but not deleted) breed
+          schema:
+            $ref: '#/definitions/Breed'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /blueprints:
+    get:
+      operationId: GetAllBlueprints
+      summary: Get all blueprints
+      description: |
+        Lists all blueprints without any pagination or filtering.
+      parameters:
+        - name: expand_references
+          in: query
+          description: |
+            All blueprint dependencies will be replaced (recursively) with full blueprint definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full blueprint dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+        - name: page
+          in: query
+          description: |
+            The indicator of the selected page
+          required: false
+          type: integer
+        - name: per_page
+          in: query
+          description: |
+            The number of blueprints per page.
+          type: integer
+      tags:
+        - Blueprint
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An array of blueprints
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Blueprint'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Add a blueprint.
+      operationId: AddBlueprint
+      description: |
+        Adds an blueprint.
+      parameters:
+        - name: blueprint
+          in: body
+          description: the blueprint to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Blueprint'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the blueprint only has to be validated.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Blueprint
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        201:
+          description: The just created blueprint
+          schema:
+            $ref: '#/definitions/Blueprint'            
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+  /blueprints/{name}:
+    get:
+      summary: Get a single blueprint.
+      operationId: GetBlueprintByName
+      description: |
+        Selects one blueprint with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: expand_references
+          in: query
+          description: all blueprint dependencies will be replaced (recursively) with full blueprint definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full blueprint dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Blueprint
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An item of blueprint
+          schema:
+            $ref: '#/definitions/Blueprint'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+    put:
+      summary: Update a single blueprint.
+      operationId: UpdateBlueprintByName
+      description: |
+        Selects one blueprint with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: blueprint
+          in: body
+          required: true
+          description: the blueprint to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Blueprint'
+        - name: validate_only
+          in: query
+          description: Indicates whether ot all full blueprint dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Blueprint
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: The just created blueprint
+          schema:
+            $ref: '#/definitions/Blueprint'
+        202:
+          description: The just created blueprint
+          schema:
+            $ref: '#/definitions/Blueprint'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Delete blueprints.
+      operationId: DeleteBlueprintByName
+      description: |
+        Delete one blueprint with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description:  the name of the blueprint to be deleted
+          type: string
+        - name: blueprint
+          in: body
+          required: true
+          description: the blueprint to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Blueprint'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the blueprint will actually be deleted.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Blueprint
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: the just deleted blueprint
+          schema:
+            $ref: '#/definitions/Blueprint'
+        204:
+          description: the just validated (but not deleted) blueprint
+          schema:
+            $ref: '#/definitions/Blueprint'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /deployments:
+    get:
+      operationId: GetAllDeployments
+      summary: Get all deployments
+      description: |
+        Lists all deployments without any pagination or filtering.
+      parameters:
+        - name: as_blueprint
+          in: query
+          description: |
+            exports each deployment as a valid blueprint. This can be used together with the header Accept: application/x-yaml to export in YAML format instead of the default JSON.
+          required: false
+          default: false
+          type: boolean
+        - name: expand_references
+          in: query
+          description: |
+            All deployment dependencies will be replaced (recursively) with full deployment definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full deployment dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+        - name: page
+          in: query
+          description: |
+            The indicator of the selected page
+          required: false
+          type: integer
+        - name: per_page
+          in: query
+          description: |
+            The number of deployments per page.
+          type: integer
+      tags:
+        - Deployment
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An array of deployments
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Blueprint'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Add a deployment.
+      operationId: AddDeployment
+      description: |
+        Adds an deployment.
+      parameters:
+        - name: deployment
+          in: body
+          description: the deployment to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Blueprint'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the deployment only has to be validated.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Deployment
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        201:
+          description: The just created deployment
+          schema:
+            $ref: '#/definitions/Blueprint'            
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+  /deployments/{name}:
+    get:
+      summary: Get a single deployment.
+      operationId: GetDeploymentByName
+      description: |
+        Selects one deployment with the name speficied by the name parameter.
+      parameters:
+        - name: as_blueprint
+          in: query
+          description: |
+            exports each deployment as a valid blueprint. This can be used together with the header Accept: application/x-yaml to export in YAML format instead of the default JSON.
+          required: false
+          default: false
+          type: boolean
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: expand_references
+          in: query
+          description: all deployment dependencies will be replaced (recursively) with full deployment definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full deployment dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Deployment
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An item of deployment
+          schema:
+            $ref: '#/definitions/Blueprint'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+    put:
+      summary: Update a single deployment.
+      operationId: UpdateDeploymentByName
+      description: |
+        Selects one deployment with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: deployment
+          in: body
+          required: true
+          description: the deployment to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Blueprint'
+        - name: validate_only
+          in: query
+          description: Indicates whether ot all full deployment dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Deployment
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: The just created deployment
+          schema:
+            $ref: '#/definitions/Blueprint'
+        202:
+          description: The just created deployment
+          schema:
+            $ref: '#/definitions/Blueprint'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Delete deployments.
+      operationId: DeleteDeploymentByName
+      description: |
+        Delete one deployment with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description:  the name of the deployment to be deleted
+          type: string
+        - name: deployment
+          in: body
+          required: true
+          description: the deployment to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Blueprint'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the deployment will actually be deleted.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Deployment
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: the just deleted deployment
+          schema:
+            $ref: '#/definitions/Blueprint'
+        204:
+          description: the just validated (but not deleted) deployment
+          schema:
+            $ref: '#/definitions/Blueprint'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /gateways:
+    get:
+      operationId: GetAllGateways
+      summary: Get all gateways
+      description: |
+        Lists all gateways without any pagination or filtering.
+      parameters:
+        - name: expand_references
+          in: query
+          description: |
+            All gateway dependencies will be replaced (recursively) with full gateway definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full gateway dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+        - name: page
+          in: query
+          description: |
+            The indicator of the selected page
+          required: false
+          type: integer
+        - name: per_page
+          in: query
+          description: |
+            The number of gateways per page.
+          type: integer
+      tags:
+        - Gateway
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An array of gateways
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Gateway'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Add a gateway.
+      operationId: AddGateway
+      description: |
+        Adds an gateway.
+      parameters:
+        - name: gateway
+          in: body
+          description: the gateway to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Gateway'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the gateway only has to be validated.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Gateway
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        201:
+          description: The just created gateway
+          schema:
+            $ref: '#/definitions/Gateway'            
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+  /gateways/{name}:
+    get:
+      summary: Get a single gateway.
+      operationId: GetGatewayByName
+      description: |
+        Selects one gateway with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: expand_references
+          in: query
+          description: all gateway dependencies will be replaced (recursively) with full gateway definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full gateway dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Gateway
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An item of gateway
+          schema:
+            $ref: '#/definitions/Gateway'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+    put:
+      summary: Update a single gateway.
+      operationId: UpdateGatewayByName
+      description: |
+        Selects one gateway with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: gateway
+          in: body
+          required: true
+          description: the gateway to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Gateway'
+        - name: validate_only
+          in: query
+          description: Indicates whether ot all full gateway dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Gateway
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: The just created gateway
+          schema:
+            $ref: '#/definitions/Gateway'
+        202:
+          description: The just created gateway
+          schema:
+            $ref: '#/definitions/Gateway'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Delete gateways.
+      operationId: DeleteGatewayByName
+      description: |
+        Delete one gateway with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description:  the name of the gateway to be deleted
+          type: string
+        - name: gateway
+          in: body
+          required: true
+          description: the gateway to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Gateway'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the gateway will actually be deleted.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Gateway
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: the just deleted gateway
+          schema:
+            $ref: '#/definitions/Gateway'
+        204:
+          description: the just validated (but not deleted) gateway
+          schema:
+            $ref: '#/definitions/Gateway'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /scales:
+    get:
+      operationId: GetAllScales
+      summary: Get all scales
+      description: |
+        Lists all scales without any pagination or filtering.
+      parameters:
+        - name: expand_references
+          in: query
+          description: |
+            All scale dependencies will be replaced (recursively) with full scale definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full scale dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+        - name: page
+          in: query
+          description: |
+            The indicator of the selected page
+          required: false
+          type: integer
+        - name: per_page
+          in: query
+          description: |
+            The number of scales per page.
+          type: integer
+      tags:
+        - Scale
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An array of scales
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Scale'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Add a scale.
+      operationId: AddScale
+      description: |
+        Adds an scale.
+      parameters:
+        - name: scale
+          in: body
+          description: the scale to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Scale'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the scale only has to be validated.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Scale
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        201:
+          description: The just created scale
+          schema:
+            $ref: '#/definitions/Scale'            
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+  /scales/{name}:
+    get:
+      summary: Get a single scale.
+      operationId: GetScaleByName
+      description: |
+        Selects one scale with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: expand_references
+          in: query
+          description: all scale dependencies will be replaced (recursively) with full scale definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full scale dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Scale
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An item of scale
+          schema:
+            $ref: '#/definitions/Scale'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+    put:
+      summary: Update a single scale.
+      operationId: UpdateScaleByName
+      description: |
+        Selects one scale with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: scale
+          in: body
+          required: true
+          description: the scale to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Scale'
+        - name: validate_only
+          in: query
+          description: Indicates whether ot all full scale dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Scale
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: The just created scale
+          schema:
+            $ref: '#/definitions/Scale'
+        202:
+          description: The just created scale
+          schema:
+            $ref: '#/definitions/Scale'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Delete scales.
+      operationId: DeleteScaleByName
+      description: |
+        Delete one scale with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description:  the name of the scale to be deleted
+          type: string
+        - name: scale
+          in: body
+          required: true
+          description: the scale to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Scale'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the scale will actually be deleted.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Scale
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: the just deleted scale
+          schema:
+            $ref: '#/definitions/Scale'
+        204:
+          description: the just validated (but not deleted) scale
+          schema:
+            $ref: '#/definitions/Scale'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /filters:
+    get:
+      operationId: GetAllFilters
+      summary: Get all filters
+      description: |
+        Lists all filters without any pagination or filtering.
+      parameters:
+        - name: expand_references
+          in: query
+          description: |
+            All filter dependencies will be replaced (recursively) with full filter definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full filter dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+        - name: page
+          in: query
+          description: |
+            The indicator of the selected page
+          required: false
+          type: integer
+        - name: per_page
+          in: query
+          description: |
+            The number of filters per page.
+          type: integer
+      tags:
+        - Filter
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An array of filters
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Filter'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Add a filter.
+      operationId: AddFilter
+      description: |
+        Adds an filter.
+      parameters:
+        - name: filter
+          in: body
+          description: the filter to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Filter'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the filter only has to be validated.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Filter
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        201:
+          description: The just created filter
+          schema:
+            $ref: '#/definitions/Filter'            
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+  /filters/{name}:
+    get:
+      summary: Get a single filter.
+      operationId: GetFilterByName
+      description: |
+        Selects one filter with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: expand_references
+          in: query
+          description: all filter dependencies will be replaced (recursively) with full filter definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full filter dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Filter
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An item of filter
+          schema:
+            $ref: '#/definitions/Filter'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+    put:
+      summary: Update a single filter.
+      operationId: UpdateFilterByName
+      description: |
+        Selects one filter with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: filter
+          in: body
+          required: true
+          description: the filter to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Filter'
+        - name: validate_only
+          in: query
+          description: Indicates whether ot all full filter dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Filter
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: The just created filter
+          schema:
+            $ref: '#/definitions/Filter'
+        202:
+          description: The just created filter
+          schema:
+            $ref: '#/definitions/Filter'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Delete filters.
+      operationId: DeleteFilterByName
+      description: |
+        Delete one filter with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description:  the name of the filter to be deleted
+          type: string
+        - name: filter
+          in: body
+          required: true
+          description: the filter to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Filter'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the filter will actually be deleted.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Filter
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: the just deleted filter
+          schema:
+            $ref: '#/definitions/Filter'
+        204:
+          description: the just validated (but not deleted) filter
+          schema:
+            $ref: '#/definitions/Filter'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /slas:
+    get:
+      operationId: GetAllSlas
+      summary: Get all slas
+      description: |
+        Lists all slas without any pagination or filtering.
+      parameters:
+        - name: expand_references
+          in: query
+          description: |
+            All sla dependencies will be replaced (recursively) with full sla definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full sla dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+        - name: page
+          in: query
+          description: |
+            The indicator of the selected page
+          required: false
+          type: integer
+        - name: per_page
+          in: query
+          description: |
+            The number of slas per page.
+          type: integer
+      tags:
+        - Sla
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An array of slas
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Sla'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Add a sla.
+      operationId: AddSla
+      description: |
+        Adds an sla.
+      parameters:
+        - name: sla
+          in: body
+          description: the sla to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Sla'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the sla only has to be validated.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Sla
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        201:
+          description: The just created sla
+          schema:
+            $ref: '#/definitions/Sla'            
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+  /slas/{name}:
+    get:
+      summary: Get a single sla.
+      operationId: GetSlaByName
+      description: |
+        Selects one sla with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: expand_references
+          in: query
+          description: all sla dependencies will be replaced (recursively) with full sla definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full sla dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Sla
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An item of sla
+          schema:
+            $ref: '#/definitions/Sla'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+    put:
+      summary: Update a single sla.
+      operationId: UpdateSlaByName
+      description: |
+        Selects one sla with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: sla
+          in: body
+          required: true
+          description: the sla to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Sla'
+        - name: validate_only
+          in: query
+          description: Indicates whether ot all full sla dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Sla
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: The just created sla
+          schema:
+            $ref: '#/definitions/Sla'
+        202:
+          description: The just created sla
+          schema:
+            $ref: '#/definitions/Sla'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Delete slas.
+      operationId: DeleteSlaByName
+      description: |
+        Delete one sla with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description:  the name of the sla to be deleted
+          type: string
+        - name: sla
+          in: body
+          required: true
+          description: the sla to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Sla'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the sla will actually be deleted.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Sla
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: the just deleted sla
+          schema:
+            $ref: '#/definitions/Sla'
+        204:
+          description: the just validated (but not deleted) sla
+          schema:
+            $ref: '#/definitions/Sla'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /escalations:
+    get:
+      operationId: GetAllEscalations
+      summary: Get all escalations
+      description: |
+        Lists all escalations without any pagination or filtering.
+      parameters:
+        - name: expand_references
+          in: query
+          description: |
+            All escalation dependencies will be replaced (recursively) with full escalation definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full escalation dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+        - name: page
+          in: query
+          description: |
+            The indicator of the selected page
+          required: false
+          type: integer
+        - name: per_page
+          in: query
+          description: |
+            The number of escalations per page.
+          type: integer
+      tags:
+        - Escalation
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An array of escalations
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Escalation'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Add a escalation.
+      operationId: AddEscalation
+      description: |
+        Adds an escalation.
+      parameters:
+        - name: escalation
+          in: body
+          description: the escalation to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Escalation'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the escalation only has to be validated.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Escalation
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        201:
+          description: The just created escalation
+          schema:
+            $ref: '#/definitions/Escalation'            
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+  /escalations/{name}:
+    get:
+      summary: Get a single escalation.
+      operationId: GetEscalationByName
+      description: |
+        Selects one escalation with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: expand_references
+          in: query
+          description: all escalation dependencies will be replaced (recursively) with full escalation definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full escalation dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Escalation
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An item of escalation
+          schema:
+            $ref: '#/definitions/Escalation'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+    put:
+      summary: Update a single escalation.
+      operationId: UpdateEscalationByName
+      description: |
+        Selects one escalation with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: escalation
+          in: body
+          required: true
+          description: the escalation to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Escalation'
+        - name: validate_only
+          in: query
+          description: Indicates whether ot all full escalation dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Escalation
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: The just created escalation
+          schema:
+            $ref: '#/definitions/Escalation'
+        202:
+          description: The just created escalation
+          schema:
+            $ref: '#/definitions/Escalation'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: Delete escalations.
+      operationId: DeleteEscalationByName
+      description: |
+        Delete one escalation with the name speficied by the name parameter.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description:  the name of the escalation to be deleted
+          type: string
+        - name: escalation
+          in: body
+          required: true
+          description: the escalation to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Escalation'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the escalation will actually be deleted.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Escalation
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: the just deleted escalation
+          schema:
+            $ref: '#/definitions/Escalation'
+        204:
+          description: the just validated (but not deleted) escalation
+          schema:
+            $ref: '#/definitions/Escalation'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /deployments/{id}/clusters/{name}/sla:
+    get:
+      operationId: GetAllDeploymentSlas
+      summary: Get all sla part of deployments
+      description: |
+        Lists all sla part of deployments without any pagination or filtering.
+      parameters:
+        - name: id
+          in: path
+          description: the id of the deployment.
+          required: true
+          type: string
+        - name: name
+          in: path
+          description: the name of the cluster
+          required: true
+          type: string
+        - name: expand_references
+          in: query
+          description: |
+            All sla part of deployment dependencies will be replaced (recursively) with full sla part of deployment definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full sla part of deployment dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+        - name: page
+          in: query
+          description: |
+            The indicator of the selected page
+          required: false
+          type: integer
+        - name: per_page
+          in: query
+          description: |
+            The number of sla part of deployments per page.
+          type: integer
+      tags:
+        - Deployment
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An array of sla part of deployments
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Sla'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Add a sla part of deployment.
+      operationId: AddDeploymentSla
+      description: |
+        Adds an sla part of deployment.
+      parameters:
+        - name: id
+          in: path
+          description: the id of the deployment.
+          required: true
+          type: string
+        - name: name
+          in: path
+          description: the name of the cluster
+          required: true
+          type: string
+        - name: sla part of deployment
+          in: body
+          description: the sla part of deployment to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Sla'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the sla part of deployment only has to be validated.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Deployment
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        201:
+          description: The just created sla part of deployment
+          schema:
+            $ref: '#/definitions/Sla'            
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+  /deployments/{id}/clusters/{name}/scale:
+    get:
+      operationId: GetAllDeploymentScales
+      summary: Get all Scale part of deployments
+      description: |
+        Lists all Scale part of deployments without any pagination or filtering.
+      parameters:
+        - name: id
+          in: path
+          description: the id of the deployment.
+          required: true
+          type: string
+        - name: name
+          in: path
+          description: the name of the cluster
+          required: true
+          type: string
+        - name: expand_references
+          in: query
+          description: |
+            All Scale part of deployment dependencies will be replaced (recursively) with full Scale part of deployment definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full Scale part of deployment dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+        - name: page
+          in: query
+          description: |
+            The indicator of the selected page
+          required: false
+          type: integer
+        - name: per_page
+          in: query
+          description: |
+            The number of Scale part of deployments per page.
+          type: integer
+      tags:
+        - Deployment
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An array of Scale part of deployments
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Scale'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Add a Scale part of deployment.
+      operationId: AddDeploymentScale
+      description: |
+        Adds an Scale part of deployment.
+      parameters:
+        - name: id
+          in: path
+          description: the id of the deployment.
+          required: true
+          type: string
+        - name: name
+          in: path
+          description: the name of the cluster
+          required: true
+          type: string
+        - name: Scale part of deployment
+          in: body
+          description: the Scale part of deployment to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Scale'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the Scale part of deployment only has to be validated.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Deployment
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        201:
+          description: The just created Scale part of deployment
+          schema:
+            $ref: '#/definitions/Scale'            
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+  /deployments/{id}/clusters/{name}/routing:
+    get:
+      operationId: GetAllDeploymentRoutings
+      summary: Get all Routing part of deployments
+      description: |
+        Lists all Routing part of deployments without any pagination or filtering.
+      parameters:
+        - name: id
+          in: path
+          description: the id of the deployment.
+          required: true
+          type: string
+        - name: name
+          in: path
+          description: the name of the cluster
+          required: true
+          type: string
+        - name: expand_references
+          in: query
+          description: |
+            All Routing part of deployment dependencies will be replaced (recursively) with full Routing part of deployment definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full Routing part of deployment dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+        - name: page
+          in: query
+          description: |
+            The indicator of the selected page
+          required: false
+          type: integer
+        - name: per_page
+          in: query
+          description: |
+            The number of Routing part of deployments per page.
+          type: integer
+      tags:
+        - Deployment
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An array of Routing part of deployments
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Routing'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Add a Routing part of deployment.
+      operationId: AddDeploymentRouting
+      description: |
+        Adds an Routing part of deployment.
+      parameters:
+        - name: id
+          in: path
+          description: the id of the deployment.
+          required: true
+          type: string
+        - name: name
+          in: path
+          description: the name of the cluster
+          required: true
+          type: string
+        - name: Routing part of deployment
+          in: body
+          description: the Routing part of deployment to be added in JSON or YAML-format
+          schema:
+            $ref: '#/definitions/Routing'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the Routing part of deployment only has to be validated.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - Deployment
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        201:
+          description: The just created Routing part of deployment
+          schema:
+            $ref: '#/definitions/Routing'            
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+  /sync:
+    get:
+      operationId: ForceSync
+      summary: Forces Vamp to perform a synchronization cycle, regardless of the configured default interval.
+      tags:
+        - Debug
+      consumes:
+        - application/x-yaml
+        - application/json  
+      responses:
+        200:
+          description: An JSON string
+          schema:
+            type: string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /sla:
+    get:
+      operationId: ForceSlaCheck
+      summary: Forces Vamp to perform an SLA check, regardless of the configured default interval.
+      tags:
+        - Debug
+      consumes:
+        - application/x-yaml
+        - application/json  
+      responses:
+        200:
+          description: An JSON string
+          schema:
+            type: string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /escalation:
+    get:
+      operationId: ForceEscalationCheck
+      summary: Forces Vamp to perform an escalation check, regardless of the configured default interval.
+      tags:
+        - Debug
+      consumes:
+        - application/x-yaml
+        - application/json  
+      responses:
+        200:
+          description: An JSON string
+          schema:
+            type: string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /reset:
+    get:
+      operationId: ForceReset
+      summary: Forces Vamp to perform an reset, use with caution!
+      tags:
+        - Debug
+      consumes:
+        - application/x-yaml
+        - application/json  
+      responses:
+        200:
+          description: An JSON string
+          schema:
+            type: string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /haproxy:
+    get:
+      operationId: GetHaProxy
+      summary: gets the HaProxy settings
+      tags:
+        - Debug
+      consumes:
+        - application/x-yaml
+        - application/json  
+      responses:
+        200:
+          description: An JSON string
+          schema:
+            type: string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Scale:
+    type: object
+    properties:
+      cpu:
+        type: number
+        format: double
+      memory:
+        type: string
+      instances:
+        type: integer
+  Filter:
+    type: object
+    properties:
+      condition:
+        type: string
+  Rewrite:
+    type: object
+    properties:
+      path:
+        type: string
+  Escalation:
+    type: object
+    properties:
+      type:
+        type: string
+      target:
+        type: string
+      minimum:
+        type: integer
+      maximum:
+        type: integer
+      scale_by:
+        type: integer
+  Instance:
+    type: object
+    properties:
+      name:
+        type: string
+      host:
+        type: string
+      port:
+        type: string
+      scale:
+        type: object
+        properties:
+          name: 
+            type: string
+          cpu:
+            type: integer
+          memory:
+            type: string
+          instances:
+            type: integer
+  Gateway:
+    type: object
+    properties:
+      name: 
+        type: string
+      port:
+        type: string
+      active: 
+        type: boolean
+      sticky:
+        type: string
+      routes: 
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/Route'
+  Route:
+    type: object
+    properties:
+      weight:
+        type: string
+      filter_strength:
+        type: string
+      filters:
+        type: array
+        items:
+          $ref: '#/definitions/Filter'
+      rewrites:
+        type: array
+        items:
+          $ref: '#/definitions/Rewrite'
+      instances:
+        type: array
+        items:
+          $ref: '#/definitions/Instance'
+  Sla:
+    description: A representation of an SLA
+    type: object
+    properties:
+      type:
+        type: string
+      threshold:
+        type: string
+  Port:
+    type: object
+    properties:
+      port:
+        type: string
+  Routing:
+    type: object
+    properties:
+      name:
+        type: string
+      weight:
+        type: string
+  Filters:
+    type: array
+    items: 
+      $ref: '#/definitions/Filter'
+  Rewrites:
+    type: array
+    items: 
+      $ref: '#/definitions/Rewrite'
+  Blueprint:
+    type: object
+    properties:
+      name:
+        type: string
+      gateways:
+        type: object
+        description: the format is 8080/http (key), my_frontend/port (value). Instead of http, tcp can also be used 
+        additionalProperties:
+          $ref: '#/definitions/Gateway'
+      clusters:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/Service'
+  Service:
+    type: object
+    properties:
+      services: 
+        # this would be a logical place to also include docker/marathon specs but this construct isn't supported
+        # by the openapi-specification, it is either an array or an object with properties
+        type: array
+        items:
+          $ref: '#/definitions/BreedScale'
+  BreedScale:
+    type: object
+    properties:
+      breed:
+        $ref: '#/definitions/Breed'
+      scale:
+        $ref: '#/definitions/Scale'
+  Breed:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The name of the breed
+      deployable:
+        type: string
+        description: Deployables are pointers to the actual artefacts that get deployed. Vamp supports Docker containers or can support any other artefacts supported by your container manager.
+      ports:
+        type: object
+        additionalProperties:
+          type: string
+      environment_variables:
+        type: object
+        additionalProperties:
+          type: string
+      arguments:
+        type: object
+        additionalProperties:
+          type: string
+      dependencies:
+        type: object
+        additionalProperties:
+          type: string
+      constants:
+        type: object
+        additionalProperties:
+          type: string
+  ErrorNotFound:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string

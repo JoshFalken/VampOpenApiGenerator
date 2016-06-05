@@ -1,0 +1,215 @@
+﻿  /{operation}:
+    get:
+      operationId: GetAll{capital_item}s
+      summary: Get all {lowercase_item}s
+      description: |
+        Lists all {lowercase_item}s without any pagination or filtering.
+      parameters:
+{additional_get_parameters}
+        - name: expand_references
+          in: query
+          description: |
+            All {lowercase_item} dependencies will be replaced (recursively) with full {lowercase_item} definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full {lowercase_item} dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+        - name: page
+          in: query
+          description: |
+            The indicator of the selected page
+          required: false
+          type: integer
+        - name: per_page
+          in: query
+          description: |
+            The number of {lowercase_item}s per page.
+          type: integer
+      tags:
+        - {tags}
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An array of {lowercase_item}s
+          schema:
+            type: array
+            items:
+              $ref: '{definition}'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Add a {lowercase_item}.
+      operationId: Add{capital_item}
+      description: |
+        Adds an {lowercase_item}.
+      parameters:
+{additional_post_parameters}
+        - name: {lowercase_item}
+          in: body
+          description: the {lowercase_item} to be added in JSON or YAML-format
+          schema:
+            $ref: '{definition}'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the {lowercase_item} only has to be validated.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - {tags}
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        201:
+          description: The just created {lowercase_item}
+          schema:
+            $ref: '{definition}'            
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+{byname_operations}
+  /{operation}/{name}:
+    get:
+      summary: Get a single {lowercase_item}.
+      operationId: Get{capital_item}ByName
+      description: |
+        Selects one {lowercase_item} with the name speficied by the name parameter.
+      parameters:
+{additional_get_parameters}
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: expand_references
+          in: query
+          description: all {lowercase_item} dependencies will be replaced (recursively) with full {lowercase_item} definitions. 400 Bad Request in case some dependencies are not yet fully defined.
+          required: false
+          default: false
+          type: boolean
+        - name: only_references
+          in: query
+          description: Indicates whether ot all full {lowercase_item} dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - {tags}
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: An item of {lowercase_item}
+          schema:
+            $ref: '{definition}'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'            
+    put:
+      summary: Update a single {lowercase_item}.
+      operationId: Update{capital_item}ByName
+      description: |
+        Selects one {lowercase_item} with the name speficied by the name parameter.
+      parameters:
+{additional_put_parameters}
+        - name: name
+          in: path
+          required: true
+          description: Selects the name
+          type: string
+        - name: {lowercase_item}
+          in: body
+          required: true
+          description: the {lowercase_item} to be added in JSON or YAML-format
+          schema:
+            $ref: '{definition}'
+        - name: validate_only
+          in: query
+          description: Indicates whether ot all full {lowercase_item} dependencies will be replaced with their references.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - {tags}
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: The just created {lowercase_item}
+          schema:
+            $ref: '{definition}'
+        202:
+          description: The just created {lowercase_item}
+          schema:
+            $ref: '{definition}'
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorNotFound'
+        default:
+          description: Generic error
+          schema:
+            $ref: '#/definitions/Error'
+{delete_operation}
+    delete:
+      summary: Delete {lowercase_item}s.
+      operationId: Delete{capital_item}ByName
+      description: |
+        Delete one {lowercase_item} with the name speficied by the name parameter.
+      parameters:
+{additional_delete_parameters}
+        - name: name
+          in: path
+          required: true
+          description:  the name of the {lowercase_item} to be deleted
+          type: string
+        - name: {lowercase_item}
+          in: body
+          required: true
+          description: the {lowercase_item} to be added in JSON or YAML-format
+          schema:
+            $ref: '{definition}'
+        - name: validate_only
+          in: query
+          description: Indicates whether or not the {lowercase_item} will actually be deleted.
+          required: false
+          default: false
+          type: boolean
+      tags:
+        - {tags}
+      consumes:
+        - application/x-yaml
+        - application/json
+      responses:
+        200:
+          description: the just deleted {lowercase_item}
+          schema:
+            $ref: '{definition}'
+        204:
+          description: the just validated (but not deleted) {lowercase_item}
+          schema:
+            $ref: '{definition}'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+{/delete_operation}
+{/byname_operations}

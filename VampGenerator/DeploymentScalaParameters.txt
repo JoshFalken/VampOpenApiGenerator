@@ -1,0 +1,14 @@
+﻿        - name: id
+          in: query
+          description: |
+			the id of the deployment.
+          required: false
+          default: false
+          type: string
+        - name: name
+          in: query
+          description: |
+			the name of the cluster
+          required: false
+          default: false
+          type: string
